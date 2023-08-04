@@ -5,15 +5,16 @@ path = os.getcwd()
 fileiist = os.listdir(f"{path}/번역본")
 
 for i in fileiist:
-    ReadFile = open(f"{path}/번역본/{i}", 'r' , encoding='UTF-16')
+    ReadFile = open(f"{path}/번역본/{i}", 'r' , encoding='UTF-16LE')
     ReadFile2 = open(f"{path}/시스템 문장 추출본/{i}", 'r' , encoding='UTF-16LE')
-    WriteFile = open(f"{path}/최종 결과물/{i}", 'w', encoding='UTF-16')
+    WriteFile = open(f"{path}/최종 결과물/{i}", 'w', encoding='UTF-16LE')
     lines = ReadFile.readlines()
 
-    a1 = re.compile('jap')
+    a0 = re.compile('.*[가-힣ㄱ-ㅎㅏ-ㅣ].*')
+    a1 = re.compile('~')
     a2 = re.compile(' ')
     a3 = re.compile(',')
-    a4 = re.compile('~')
+    a4 = re.compile('jap')
 
     b0 = re.compile('.*ANI.*')
 
@@ -51,11 +52,16 @@ for i in fileiist:
 
     for j in lines:
         sss = ReadFile2.readline().strip("\n")
-        c1 = re.sub(a1, 'kor', j)
-        c2 = re.sub(a2, '^', c1)
-        c3 = re.sub(a3, '、', c2)
-        c4 = re.sub(a4, '～', c3)
+
+        if a0.search(j):
+            c1 = re.sub(a1, '～', j)
+            c2 = re.sub(a2, '^', c1)
+            c3 = re.sub(a3, '、', c2)
+            c4 = re.sub(a4, 'kor', c3)
         
+        else:
+            c4 = j
+
         if b0.search(j):
             d1 = re.sub(b0, sss, j)
             d2 = re.sub(b1, 'eff1', d1)
